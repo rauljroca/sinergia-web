@@ -1,6 +1,8 @@
 import { client } from '@/sanity/client'
 import { notFound } from 'next/navigation'
 
+export const revalidate = 0; // El 0 significa "Cero caché, trae datos frescos siempre"
+
 // 1. Añadimos "Promise" al tipado de los params
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
 

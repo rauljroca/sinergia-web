@@ -1,6 +1,8 @@
 import { client } from '@/sanity/client'
 import Link from 'next/link'
 
+export const revalidate = 0; // El 0 significa "Cero caché, trae datos frescos siempre"
+
 const query = `*[_type in ["product", "family", "application"]] {
   _type,
   _id,

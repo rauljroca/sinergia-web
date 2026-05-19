@@ -2,6 +2,8 @@ import { client } from '@/sanity/client'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
+export const revalidate = 0; // El 0 significa "Cero caché, trae datos frescos siempre"
+
 export default async function FamilyPage({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params
     const { slug } = resolvedParams
