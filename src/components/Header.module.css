@@ -1,0 +1,85 @@
+.header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #eaeaea;
+    box-sizing: border-box;
+    font-family: inherit;
+    left: 0;
+    padding: 10px 40px;
+    position: sticky;
+    right: 0;
+    top: 0;
+    width: 100%;
+}
+
+/* Fila superior para las redes sociales a la derecha */
+.topBar {
+    display: flex;
+    display: none;
+    gap: 15px;
+    justify-content: flex-end;
+    padding-bottom: 5px;
+}
+
+.socialIcon {
+    color: #333;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+/* Fila principal: Tres columnas (Nav - Logo - Partners) */
+.mainBar {
+    align-items: center;
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+
+.nav,
+.partnersBar {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    gap: 20px;
+}
+
+/* Columna Izquierda: Navegación */
+.nav {
+}
+
+.navLink {
+    align-items: center;
+    color: #333;
+    display: flex;
+    font-size: 10px;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+/* Columna Central: Logo Sinergia */
+.logoCenter {
+    flex-shrink: 0;
+}
+
+.logoMain {
+    height: 40px;
+    width: auto;
+}
+
+/* Columna Derecha: Logos de Partners */
+.partnersBar {
+    justify-content: right;
+}
+
+.partnerLogo {
+    height: auto;
+    max-height: 26px;
+    max-width: 90px;
+    opacity: .8;
+    transition: opacity .2s;
+    width: auto;
+}
+
+.partnerLogo:hover {
+    opacity: 1;
+}

@@ -28,6 +28,14 @@ export default async function FamilyPage({ params }: { params: Promise<{ slug: s
             <h1 style={{ marginTop: '20px', fontSize: '36px' }}>{family.name}</h1>
             {family.description && <p style={{ fontSize: '18px', color: '#555', lineHeight: '1.6' }}>{family.description}</p>}
 
+            {family.imageUrl && (
+                <img
+                    src={family.imageUrl}
+                    alt={family.title}
+                    style={{ width: '100%', maxWidth: '400px', borderRadius: '8px', marginTop: '20px', border: '1px solid #eaeaea' }}
+                />
+            )}
+
             <div style={{ marginTop: '40px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
                 <h2>Productos en esta familia</h2>
                 {family.products && family.products.length > 0 ? (
@@ -35,6 +43,14 @@ export default async function FamilyPage({ params }: { params: Promise<{ slug: s
                         {family.products.map((product: any) => (
                             <li key={product._id} style={{ margin: '10px 0' }}>
                                 <Link href={`/productos/${product.slug}`} style={{ color: '#0066cc', textDecoration: 'none' }}>
+                                    123
+                                    {product.imageUrl && (
+                                        <img
+                                            src={product.imageUrl}
+                                            alt={product.title}
+                                            style={{ width: '100%', maxWidth: '400px', borderRadius: '8px', marginTop: '20px', border: '1px solid #eaeaea' }}
+                                        />
+                                    )}
                                     📦 {product.title}
                                 </Link>
                             </li>
