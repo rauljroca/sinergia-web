@@ -1,65 +1,61 @@
 import { client } from '@/sanity/client'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
+import FamilyFilterView from '@/components/FamilyFilterView'
 
-export const revalidate = 0; // El 0 significa "Cero caché, trae datos frescos siempre"
+export const revalidate = 0;
 
 export default async function FamilyPage({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params
     const { slug } = resolvedParams
 
-    // Pedimos la familia y, de paso, buscamos qué productos la tienen asignada
-    const family = await client.fetch(`*[_type == "family" && slug.current == $slug][0]{
-    name,
-    description,
-    "products": *[_type == "product" && mainFamily._ref == ^._id]{
-      _id,
-      title,
-      "slug": slug.current
-    }
-  }`, { slug })
+    // Consulta adaptada para separar familias principales, subfamilias y sus productos
+    const data = await client.fetch(`{
+        // 1. Solo las familias principales para la columna izquierda
+        "allFamilies": *[_type == "family"] { 
+            _id, 
+            name, 
+            "slug": slug.current 
+        },
+        // 2. Datos de la familia principal activa
+        "currentFamily": *[_type == "family" && slug.current == $slug][0] { 
+            _id, 
+            name, 
+            description 
+        },
+        // 3. Trae las subfamilias asociadas a esta familia principal
+        "subfamilies": *[_type == "subfamily" && family._ref == *[_type == "family" && slug.current == $slug][0]._id] {
+            _id,
+            name
+        },
+        // 4. Filtros adicionales de Sanity (Voltaje, Capacidad...)
+        "familyFilters": *[_type == "productFilter" && family._ref == *[_type == "family" && slug.current == $slug][0]._id] {
+            _id,
+            category,
+            value
+        },
+        // 5. Productos que pertenezcan a la familia o a alguna de sus subfamilias
+        "products": *[_type == "product" && (mainFamily._ref == *[_type == "family" && slug.current == $slug][0]._id || subfamily._ref in *[_type == "subfamily" && family._ref == *[_type == "family" && slug.current == $slug][0]._id]._id)]{
+            _id,
+            title,
+            "slug": slug.current,
+            "imageUrl": catalogImage.asset->url,
+            "filterIds": filters[]->_id,
+            "subfamilyId": subfamily._ref // Guardamos el ID de su subfamilia para filtrarlo en el cliente
+        }
+    }`, { slug })
 
-    if (!family) return notFound()
+    if (!data.currentFamily) return notFound()
 
     return (
-        <main style={{ padding: '50px', maxWidth: '900px', margin: '0 auto', fontFamily: 'sans-serif' }}>
-            <Link href="/" style={{ color: 'blue', textDecoration: 'none', fontWeight: 'bold' }}>← Volver a la Home</Link>
-
-            <h1 style={{ marginTop: '20px', fontSize: '36px' }}>{family.name}</h1>
-            {family.description && <p style={{ fontSize: '18px', color: '#555', lineHeight: '1.6' }}>{family.description}</p>}
-
-            {family.imageUrl && (
-                <img
-                    src={family.imageUrl}
-                    alt={family.title}
-                    style={{ width: '100%', maxWidth: '400px', borderRadius: '8px', marginTop: '20px', border: '1px solid #eaeaea' }}
-                />
-            )}
-
-            <div style={{ marginTop: '40px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
-                <h2>Productos en esta familia</h2>
-                {family.products && family.products.length > 0 ? (
-                    <ul style={{ marginTop: '15px' }}>
-                        {family.products.map((product: any) => (
-                            <li key={product._id} style={{ margin: '10px 0' }}>
-                                <Link href={`/productos/${product.slug}`} style={{ color: '#0066cc', textDecoration: 'none' }}>
-                                    123
-                                    {product.imageUrl && (
-                                        <img
-                                            src={product.imageUrl}
-                                            alt={product.title}
-                                            style={{ width: '100%', maxWidth: '400px', borderRadius: '8px', marginTop: '20px', border: '1px solid #eaeaea' }}
-                                        />
-                                    )}
-                                    📦 {product.title}
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p style={{ color: '#777' }}>Aún no hay productos en esta familia.</p>
-                )}
-            </div>
-        </main>
+        <FamilyFilterView
+            // EL TRUCO: Al cambiar de ID de familia, React destruye el componente viejo
+            // y monta el nuevo reiniciando todos los checkboxes a "activados"
+            key={data.currentFamily._id}
+            allFamilies={data.allFamilies}
+            currentFamily={data.currentFamily}
+            subfamilies={data.subfamilies || []}
+            familyFilters={data.familyFilters || []}
+            products={data.products || []}
+        />
     )
 }
