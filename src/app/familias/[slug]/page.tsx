@@ -2,16 +2,16 @@ import { client } from '@/sanity/client'
 import { notFound } from 'next/navigation'
 import FamilyFilterView from '@/components/FamilyFilterView'
 
-export const revalidate = 0;
+export const revalidate = 0; // Cero caché en desarrollo. Cambiar en producción.
 
 export default async function FamilyPage({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params
     const { slug } = resolvedParams
 
-    // Consulta adaptada para separar familias principales, subfamilias y sus productos
+    // Consulta adaptada para buscar subfamilias por su campo 'parent'
     const data = await client.fetch(`{
-        // 1. Solo las familias principales para la columna izquierda
-        "allFamilies": *[_type == "family"] { 
+        // 1. Traemos solo familias de primer nivel (las que no tienen un padre asignado) para el menú lateral
+        "allFamilies": *[_type == "family" && !defined(parent)] { 
             _id, 
             name, 
             "slug": slug.current 
@@ -22,25 +22,25 @@ export default async function FamilyPage({ params }: { params: Promise<{ slug: s
             name, 
             description 
         },
-        // 3. Trae las subfamilias asociadas a esta familia principal
-        "subfamilies": *[_type == "subfamily" && family._ref == *[_type == "family" && slug.current == $slug][0]._id] {
+        // 3. Trae los documentos de tipo 'family' cuyo parent sea esta familia principal
+        "subfamilies": *[_type == "family" && parent._ref == *[_type == "family" && slug.current == $slug][0]._id] {
             _id,
             name
         },
-        // 4. Filtros adicionales de Sanity (Voltaje, Capacidad...)
+        // 4. Filtros técnicos adicionales vinculados a esta familia
         "familyFilters": *[_type == "productFilter" && family._ref == *[_type == "family" && slug.current == $slug][0]._id] {
             _id,
             category,
             value
         },
-        // 5. Productos que pertenezcan a la familia o a alguna de sus subfamilias
-        "products": *[_type == "product" && (mainFamily._ref == *[_type == "family" && slug.current == $slug][0]._id || subfamily._ref in *[_type == "subfamily" && family._ref == *[_type == "family" && slug.current == $slug][0]._id]._id)]{
+        // 5. Productos que pertenecen directamente a la familia o a alguna de sus subfamilias hijas
+        "products": *[_type == "product" && (mainFamily._ref == *[_type == "family" && slug.current == $slug][0]._id || subfamily._ref in *[_type == "family" && parent._ref == *[_type == "family" && slug.current == $slug][0]._id]._id)]{
             _id,
             title,
             "slug": slug.current,
             "imageUrl": catalogImage.asset->url,
             "filterIds": filters[]->_id,
-            "subfamilyId": subfamily._ref // Guardamos el ID de su subfamilia para filtrarlo en el cliente
+            "subfamilyId": subfamily._ref
         }
     }`, { slug })
 
@@ -48,8 +48,6 @@ export default async function FamilyPage({ params }: { params: Promise<{ slug: s
 
     return (
         <FamilyFilterView
-            // EL TRUCO: Al cambiar de ID de familia, React destruye el componente viejo
-            // y monta el nuevo reiniciando todos los checkboxes a "activados"
             key={data.currentFamily._id}
             allFamilies={data.allFamilies}
             currentFamily={data.currentFamily}

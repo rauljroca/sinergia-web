@@ -34,3 +34,10 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## NOTAS !!!
+### 3. Tipado con TypeScript
+He notado un uso extensivo del tipo any en los mapeos y props (por ejemplo, (item: any) o (product: any)).
+
+La alternativa: Definir interfaces de TypeScript para tus documentos de Sanity (Product, Family, Application, etc.). Esto te ahorrará muchos errores a largo plazo y mejorará el autocompletado en tu editor. Herramientas como sanity typegen pueden generarte estos tipos automáticamente basados en tu esquema.
+
