@@ -2,7 +2,7 @@ import { client } from '@/sanity/client'
 import { notFound } from 'next/navigation'
 import FamilyFilterView from '@/components/FamilyFilterView'
 
-export const revalidate = 0; // Cero caché en desarrollo. Cambiar en producción.
+export const revalidate = 60; // Cero caché en desarrollo. Cambiar en producción.
 
 export default async function FamilyPage({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params

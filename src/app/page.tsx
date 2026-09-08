@@ -1,7 +1,7 @@
 import { client } from '@/sanity/client'
 import Link from 'next/link'
 
-export const revalidate = 0; // El 0 significa "Cero caché, trae datos frescos siempre" !!! tengo que borrarlo en pro
+export const revalidate = 60; // El 0 significa "Cero caché, trae datos frescos siempre" !!! tengo que borrarlo en pro
 
 const query = `*[_type in ["product", "family", "application"]] {
   _type,

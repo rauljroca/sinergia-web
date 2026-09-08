@@ -1,50 +1,82 @@
 import { client } from '@/sanity/client'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 0; // El 0 significa "Cero caché, trae datos frescos siempre" !!! tengo que borrarlo en pro
+export const revalidate = 60; // ¡Recuerda! Mejor 60 que 0 para rendimiento
 
-// 1. Añadimos "Promise" al tipado de los params
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
-
-    // 2. ¡EL ARREGLO! Ponemos el "await" para esperar a que Next.js lea la URL
     const resolvedParams = await params
     const { slug } = resolvedParams
 
-    // Ahora la consulta ya tiene su $slug correctamente
+    // 1. Hacemos el Fetch
     const product = await client.fetch(`*[_type == "product" && slug.current == $slug][0]{
     title,
     description,
-    serie,
-    "imageUrl": catalogImage.asset->url,
-    descriptionBlocks
+    "mainImageUrl": catalogImage.asset->url,
+    "filters": filters[]->{
+      _id,
+      name,
+      "groupName": group->title,
+      "groupOrder": group->order
+    }
   }`, { slug })
 
     if (!product) return notFound()
 
+    // 2. Agrupamos los filtros usando JavaScript
+    // Esto convierte un array plano en un objeto: { "Aplicaciones": ["Industria", "Data center"], "Tipo": ["Monofásicos"] }
+    const groupedFilters = product.filters?.reduce((acc: any, filter: any) => {
+        const group = filter.groupName || 'Otros'
+        if (!acc[group]) acc[group] = []
+        acc[group].push(filter.name)
+        return acc
+    }, {})
+
     return (
-        <main style={{ padding: '50px', maxWidth: '900px', margin: '0 auto', fontFamily: 'sans-serif' }}>
-            <a href="/" style={{ color: 'blue', textDecoration: 'none', fontWeight: 'bold' }}>← Volver a la Home</a>
+        <main className="max-w-6xl mx-auto p-8 font-sans">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-            <h1 style={{ marginTop: '20px', fontSize: '36px' }}>{product.title}</h1>
-            {product.serie && <p style={{ color: 'gray', fontSize: '18px' }}>Serie: {product.serie}</p>}
+                {/* COLUMNA IZQUIERDA: Info principal del producto */}
+                <div className="md:col-span-2">
+                    <h1 className="text-4xl font-bold mb-4">{product.title}</h1>
+                    <p className="text-lg text-gray-600 mb-6">{product.description}</p>
 
-            {product.imageUrl && (
-                <img
-                    src={product.imageUrl}
-                    alt={product.title}
-                    style={{ width: '100%', maxWidth: '400px', borderRadius: '8px', marginTop: '20px', border: '1px solid #eaeaea' }}
-                />
-            )}
+                    {product.mainImageUrl && (
+                        <img
+                            src={product.mainImageUrl}
+                            alt={product.title}
+                            className="w-full rounded-lg"
+                        />
+                    )}
+                </div>
 
-            <div style={{ marginTop: '40px' }}>
-                <h2>Descripción Técnica</h2>
-                {/* Aquí pintamos los bloques que creamos antes */}
-                {product.descriptionBlocks?.map((block: any, i: number) => (
-                    <div key={i} style={{ borderBottom: '1px solid #eee', padding: '20px 0' }}>
-                        <strong style={{ fontSize: '20px', color: '#333' }}>{block.title}</strong>
-                        <p style={{ lineHeight: '1.6', color: '#555' }}>{block.text}</p>
-                    </div>
-                ))}
+                {/* COLUMNA DERECHA: Los filtros / Especificaciones */}
+                <aside className="bg-gray-50 p-6 rounded-lg border border-gray-200 self-start">
+                    <h3 className="text-xl font-bold mb-6 border-b pb-2">Especificaciones</h3>
+
+                    {/* 3. Pintamos los grupos ya ordenados */}
+                    {groupedFilters && Object.entries(groupedFilters).map(([groupName, options]: any) => (
+                        <div key={groupName} className="mb-5">
+                            {/* Título del grupo (Ej: "Aplicaciones" o "Tipo") */}
+                            <h4 className="font-semibold text-gray-800 uppercase text-sm tracking-wider mb-2">
+                                {groupName}
+                            </h4>
+
+                            {/* Opciones dentro de ese grupo */}
+                            <ul className="space-y-1">
+                                {options.map((optionName: string, i: number) => (
+                                    <li key={i} className="text-gray-600 flex items-center gap-2">
+                                        <span className="text-blue-500">✓</span> {optionName}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+
+                    {!groupedFilters && (
+                        <p className="text-sm text-gray-500">No hay especificaciones marcadas.</p>
+                    )}
+                </aside>
+
             </div>
         </main>
     )

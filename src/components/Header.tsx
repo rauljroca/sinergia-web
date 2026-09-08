@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import styles from './Header.module.css'
+import Image from 'next/image'
 
 export default function Header() {
     return (
@@ -37,12 +38,39 @@ export default function Header() {
 
                 {/* Bloque Derecho: Marcas Partners */}
                 <div className={styles.partnersBar}>
-                    <img src="/logos/mtu.png" alt="MTU" className={styles.partnerLogo} />
-                    <img src="/logos/alpha.png" alt="Alpha" className={styles.partnerLogo} />
-                    <img src="/logos/borri.png" alt="Borri" className={styles.partnerLogo} />
-                    <img src="/logos/legrand.png" alt="Legrand" className={styles.partnerLogo} />
+                    <Image
+                        src="/logos/mtu.png"
+                        alt="MTU"
+                        className={styles.partnerLogo}
+                        width="90"
+                        height="19"
+                        style={{ objectFit: 'cover'}}
+                    />
+                    <Image
+                        src="/logos/alpha.png"
+                        alt="Alpha"
+                        className={styles.partnerLogo}
+                        width="52"
+                        height="26"
+                        style={{ objectFit: 'cover'}}
+                    />
+                    <Image
+                        src="/logos/borri.png"
+                        alt="Borri"
+                        className={styles.partnerLogo}
+                        width="90"
+                        height="21"
+                        style={{ objectFit: 'cover'}}
+                    />
+                    <Image
+                        src="/logos/legrand.png"
+                        alt="Legrand"
+                        className={styles.partnerLogo}
+                        width="51"
+                        height="26"
+                        style={{ objectFit: 'cover'}}
+                    />
                 </div>
-
             </div>
         </header>
     )
