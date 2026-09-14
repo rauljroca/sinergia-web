@@ -135,7 +135,18 @@ export default function FamilyFilterView({ allFamilies, currentFamily, subfamili
                                     ) : (
                                         <div style={{ height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', backgroundColor: '#f5f5f5', borderRadius: '6px', marginBottom: '10px' }}>📦</div>
                                     )}
-                                    <h4 style={{ margin: '5px 0 0 0', color: '#0066cc' }}>{product.title}</h4>
+                                    <h4 style={{ margin: '5px 0 0 0', color: '#0066cc' }}>
+                                        {product.styledTitle?.mainTitle || product.styledTitle?.auxTitle ? (
+                                            <>
+                                            {product.styledTitle.mainTitle && (<span>{product.styledTitle.mainTitle} </span>)}
+                                            {product.styledTitle.auxTitle && (<span className="text-gray-400 font-normal">{product.styledTitle.auxTitle}</span>)}
+                                            </>
+                                            ) : (
+                                            <>
+                                                {product.title}
+                                            </>
+                                            )}
+                                    </h4>
                                 </Link>
                             </div>
                         ))}

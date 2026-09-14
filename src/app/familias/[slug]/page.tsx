@@ -40,7 +40,11 @@ export default async function FamilyPage({ params }: { params: Promise<{ slug: s
             "slug": slug.current,
             "imageUrl": catalogImage.asset->url,
             "filterIds": filters[]->_id,
-            "subfamilyId": subfamily._ref
+            "subfamilyId": subfamily._ref,
+            styledTitle {
+              mainTitle,
+              auxTitle
+            }
         }
     }`, { slug })
 

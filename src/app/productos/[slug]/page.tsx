@@ -10,6 +10,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     // 1. Hacemos el Fetch
     const product = await client.fetch(`*[_type == "product" && slug.current == $slug][0]{
     title,
+    styledTitle {
+      mainTitle,
+      auxTitle
+    },
     description,
     "mainImageUrl": catalogImage.asset->url,
     "filters": filters[]->{
@@ -37,7 +41,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
                 {/* COLUMNA IZQUIERDA: Info principal del producto */}
                 <div className="md:col-span-2">
-                    <h1 className="text-4xl font-bold mb-4">{product.title}</h1>
+                    {product.styledTitle?.mainTitle || product.styledTitle?.auxTitle ? (
+                        <h1 className="text-4xl font-bold mb-4">
+                            {product.styledTitle.mainTitle && (<span>{product.styledTitle.mainTitle} </span>)}
+                            {product.styledTitle.auxTitle && (<span className="text-blue-600 font-normal">{product.styledTitle.auxTitle}</span>)}
+                        </h1>
+                    ) : (
+                        <h1 className="text-4xl font-bold mb-4">{product.title}</h1>
+                    )}
+
                     <p className="text-lg text-gray-600 mb-6">{product.description}</p>
 
                     {product.mainImageUrl && (
