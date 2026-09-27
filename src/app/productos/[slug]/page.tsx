@@ -57,33 +57,75 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     }, {})
 
     return (
-        <main className="max-w-6xl mx-auto p-8 font-sans">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* COLUMNA IZQUIERDA: Info principal del producto */}
-                <div className="md:col-span-2">
-                    {product.styledTitle?.mainTitle || product.styledTitle?.auxTitle ? (
-                        <h1 className="text-4xl font-bold mb-4">
-                            {product.styledTitle.mainTitle && (<span>{product.styledTitle.mainTitle} </span>)}
-                            {product.styledTitle.auxTitle && (<span className="text-blue-600 font-normal">{product.styledTitle.auxTitle}</span>)}
-                        </h1>
-                    ) : (
-                        <h1 className="text-4xl font-bold mb-4">{product.title}</h1>
-                    )}
 
-                    <p className="text-lg text-gray-600 mb-6">{product.description}</p>
-                    {product.serie && (
-                        <span className="inline-block bg-gray-100 text-gray-700 text-xs font-semibold px-2.5 py-0.5 rounded mb-2">
+        /*
+        main className="grid grid-cols-12" style={{ gap: '40px', margin: '0 auto' }}
+        aside className="col-span-3" style={{ borderRight: '1px solid #eaeaea' }}
+        section className="col-span-9"
+
+        */
+
+        <main>
+
+            <div className="font-sans p-8" style={{ backgroundColor: '#075FA3' }}>
+                <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 p-8">
+                    <nav className="md:col-span-12 text-white breadCrumbs">
+                        <ul className="flex flex-wrap gap-2">
+                            <li><Link href="/">Inicio</Link> /</li>
+                            <li><Link href="/productos">Productos</Link> /</li>
+<li>
+    {groupedFilters && Object.entries(groupedFilters).map(([groupName, options]: any, index) => (
+        <div key={groupName} className="mb-5">
+            <ul className="space-y-1">
+                {options.map((optionName: string, i: number) => (
+                    <li key={i} className="text-gray-600 flex items-center gap-2">
+                        {/* {groupName} */}
+                        {index} {optionName}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    ))}
+</li>
+                            <li>{product.title}</li>
+                        </ul>
+                    </nav>
+                    <div className="md:col-span-4">
+                        {product.mainImageUrl && (
+                            <img
+                                src={product.mainImageUrl}
+                                alt={product.title}
+                                className="w-full rounded-lg"
+                            />
+                        )}
+                    </div>
+                    <span className="md:col-span-2"></span>
+                    <div className="md:col-span-6">
+                        {product.styledTitle?.mainTitle || product.styledTitle?.auxTitle ? (
+                            <h1 className="text-4xl text-white font-bold mb-4">
+                                {product.styledTitle.mainTitle && (<span>{product.styledTitle.mainTitle} </span>)}
+                                {product.styledTitle.auxTitle && (<span className="text-gray-200 font-normal">{product.styledTitle.auxTitle}</span>)}
+                            </h1>
+                        ) : (
+                            <h1 className="text-4xl text-white font-bold mb-4">{product.title}</h1>
+                        )}
+                        <p className="text-lg text-white mb-6">{product.description}</p>
+                        {product.serie && (
+                            <span className="inline-block bg-gray-100 text-gray-700 text-xs font-semibold px-2.5 py-0.5 rounded mb-2">
                             Serie: {product.serie}
                         </span>
-                    )}
+                        )}
+                    </div>
+                </div>
+            </div>
 
-                    {product.mainImageUrl && (
-                        <img
-                            src={product.mainImageUrl}
-                            alt={product.title}
-                            className="w-full rounded-lg"
-                        />
-                    )}
+
+
+
+            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 p-8">
+                {/* COLUMNA IZQUIERDA: Info principal del producto */}
+                <div className="md:col-span-2">
+
                 </div>
 
                 {/* COLUMNA DERECHA: Los filtros / Especificaciones */}
@@ -142,7 +184,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
             {/* BLOQUES DE DESCRIPCIÓN (Características destacadas) */}
             {product.descriptionBlocks && product.descriptionBlocks.length > 0 && (
-                <section className="mt-8 border-t pt-6">
+                <section className="mt-8 border-t pt-6         max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-8 p-8">
+
                     <h3 className="text-2xl font-bold mb-4">Características destacadas</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {product.descriptionBlocks.map((block: any, index: number) => (
@@ -165,7 +208,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             )}
             {/* SECCIÓN INFERIOR: PRODUCTOS RELACIONADOS */}
             {product.relatedProducts && product.relatedProducts.length > 0 && (
-                <section className="mt-16 border-t pt-8">
+                <section className="mt-8 border-t pt-6         max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-8 p-8">
                     <h3 className="text-2xl font-bold mb-6">Productos Relacionados</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                         {product.relatedProducts.map((rel: any) => (

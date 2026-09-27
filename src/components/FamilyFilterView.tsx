@@ -40,10 +40,10 @@ export default function FamilyFilterView({ allFamilies, currentFamily, subfamili
     })
 
     return (
-        <main style={{ display: 'flex', gap: '40px', padding: '40px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'sans-serif' }}>
+        <main className="max-w-6xl mx-auto p-8 font-sans max-w-6xl grid grid-cols-12" style={{ gap: '40px', margin: '0 auto' }}>
 
             {/* COLUMNA IZQUIERDA */}
-            <aside style={{ width: '280px', flexShrink: 0, borderRight: '1px solid #eaeaea', paddingRight: '20px' }}>
+            <aside className="col-span-3" style={{ borderRight: '1px solid #eaeaea' }}>
 
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0' }}>
                     {allFamilies.map((fam: any) => {
@@ -111,7 +111,7 @@ export default function FamilyFilterView({ allFamilies, currentFamily, subfamili
             </aside>
 
             {/* COLUMNA DERECHA: Productos */}
-            <section style={{ flex: 1 }}>
+            <section className="col-span-9">
                 <h1 style={{ fontSize: '32px', margin: '0 0 10px 0' }}>{currentFamily.name}</h1>
                 <p style={{ color: '#666', marginBottom: '30px', lineHeight: '1.5' }}>{currentFamily.description}</p>
 
