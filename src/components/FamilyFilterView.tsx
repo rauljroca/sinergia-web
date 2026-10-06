@@ -43,7 +43,7 @@ export default function FamilyFilterView({ allFamilies, currentFamily, subfamili
         <main className="max-w-6xl mx-auto p-8 font-sans max-w-6xl grid grid-cols-12" style={{ gap: '40px', margin: '0 auto' }}>
 
             {/* COLUMNA IZQUIERDA */}
-            <aside className="col-span-3" style={{ borderRight: '1px solid #eaeaea' }}>
+            <aside className="col-span-3 min-w-6 min-w-300 min-w-[300px]" style={{ borderRight: '1px solid #eaeaea' }}>
 
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0' }}>
                     {allFamilies.map((fam: any) => {
