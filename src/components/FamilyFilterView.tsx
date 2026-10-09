@@ -4,13 +4,17 @@ import { useState } from 'react'
 import Link from 'next/link'
 
 export default function FamilyFilterView({ allFamilies, currentFamily, subfamilies, familyFilters, products }: any) {
-    const [selectedSubfamilies, setSelectedSubfamilies] = useState<string[]>(() =>
-        subfamilies.map((sub: any) => sub._id)
-    )
+    // Si la página activa es una subfamilia, arrancamos seleccionando solo esa subfamilia
+    const [selectedSubfamilies, setSelectedSubfamilies] = useState<string[]>(() => {
+        const isCurrentASubfamily = subfamilies.some((sub: any) => sub._id === currentFamily._id)
+        if (isCurrentASubfamily) {
+            return [currentFamily._id]
+        }
+        return subfamilies.map((sub: any) => sub._id)
+    })
 
     const [selectedFilters, setSelectedFilters] = useState<string[]>([])
 
-    // Agrupamos los filtros por el título de su Grupo (Ej: "Aplicaciones", "Tipo", "Potencia")
     const filtersByCategory = familyFilters.reduce((acc: any, filter: any) => {
         const groupName = filter.groupTitle || 'Otros'
         if (!acc[groupName]) acc[groupName] = []
@@ -31,23 +35,33 @@ export default function FamilyFilterView({ allFamilies, currentFamily, subfamili
     }
 
     const filteredProducts = products.filter((product: any) => {
-        const matchesSubfamily = !product.subfamilyId || selectedSubfamilies.includes(product.subfamilyId)
+        // FILTRO A: Si no hay subfamilias definidas o no hay ninguna marcada, o coincide la subfamilia
+        const matchesSubfamily =
+            subfamilies.length === 0 ||
+            selectedSubfamilies.length === 0 ||
+            !product.subfamilyId ||
+            selectedSubfamilies.includes(product.subfamilyId)
 
+        // FILTRO B: Filtros técnicos
         const matchesTechnical = selectedFilters.length === 0 ||
             selectedFilters.every(id => product.filterIds?.includes(id))
 
         return matchesSubfamily && matchesTechnical
     })
 
-    return (
-        <main className="max-w-6xl mx-auto p-8 font-sans max-w-6xl grid grid-cols-12" style={{ gap: '40px', margin: '0 auto' }}>
+    // Detectar qué familia principal debe aparecer activa en el menú lateral
+    const activeMainFamilySlug = currentFamily.parent ? currentFamily.parent.slug : currentFamily.slug
 
-            {/* COLUMNA IZQUIERDA */}
-            <aside className="col-span-3 min-w-6 min-w-300 min-w-[300px]" style={{ borderRight: '1px solid #eaeaea' }}>
+    return (
+
+        <main className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 p-8">
+
+            {/* COLUMNA IZQUIERDA: Menú lateral de familias */}
+            <aside className="md:col-span-1">
 
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0' }}>
                     {allFamilies.map((fam: any) => {
-                        const isActive = fam.slug === currentFamily.slug
+                        const isActive = fam.slug === activeMainFamilySlug
                         return (
                             <li key={fam._id} style={{ margin: '8px 0' }}>
                                 <Link href={`/familias/${fam.slug}`} style={{
@@ -70,7 +84,7 @@ export default function FamilyFilterView({ allFamilies, currentFamily, subfamili
                 <div style={{ backgroundColor: '#f9f9f9', padding: '15px', borderRadius: '8px' }}>
                     <h3 style={{ marginTop: 0 }}>Filtrar por:</h3>
 
-                    {/* SECCIÓN A: Subfamilias */}
+                    {/* Checkboxes de Subfamilias */}
                     {subfamilies.length > 0 && (
                         <div style={{ marginBottom: '25px', borderBottom: '1px solid #ddd', paddingBottom: '15px' }}>
                             <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#333', textTransform: 'uppercase', fontWeight: 'bold' }}>
@@ -89,7 +103,7 @@ export default function FamilyFilterView({ allFamilies, currentFamily, subfamili
                         </div>
                     )}
 
-                    {/* SECCIÓN B: Filtros dinámicos por grupo */}
+                    {/* Checkboxes de Filtros Técnicos */}
                     {Object.keys(filtersByCategory).map((groupName) => (
                         <div key={groupName} style={{ marginBottom: '20px' }}>
                             <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#666', textTransform: 'uppercase' }}>
@@ -111,7 +125,20 @@ export default function FamilyFilterView({ allFamilies, currentFamily, subfamili
             </aside>
 
             {/* COLUMNA DERECHA: Productos */}
-            <section className="col-span-9">
+            <section className="md:col-span-3">
+                {/* Si es una subfamilia, mostramos su Padre como enlace clicable */}
+                {currentFamily.parent && (
+                    <div style={{ marginBottom: '5px', fontSize: '14px', fontWeight: 'bold' }}>
+                        <Link
+                            href={`/familias/${currentFamily.parent.slug}`}
+                            style={{ color: '#0066cc', textDecoration: 'none' }}
+                        >
+                            {currentFamily.parent.name}
+                        </Link>
+                        <span style={{ color: '#999', margin: '0 8px' }}>/</span>
+                    </div>
+                )}
+
                 <h1 style={{ fontSize: '32px', margin: '0 0 10px 0' }}>{currentFamily.name}</h1>
                 <p style={{ color: '#666', marginBottom: '30px', lineHeight: '1.5' }}>{currentFamily.description}</p>
 

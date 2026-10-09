@@ -2,53 +2,58 @@ import { client } from '@/sanity/client'
 import { notFound } from 'next/navigation'
 import Link from "next/link";
 
-export const revalidate = 60; // ¡Recuerda! Mejor 60 que 0 para rendimiento
+export const revalidate = 60;
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params
     const { slug } = resolvedParams
 
-    // 1. Hacemos el Fetch
     const product = await client.fetch(`*[_type == "product" && slug.current == $slug][0]{
-    title,
-    styledTitle {
-      mainTitle,
-      auxTitle
-    },
-    serie,
-    description,
-    "mainImageUrl": catalogImage.asset->url,
-    descriptionBlocks[] {
         title,
-        text,
-        "iconUrl": icon.asset->url
-    },
-    "filters": filters[]->{
-      _id,
-      name,
-      "groupName": group->title,
-      "groupOrder": group->order
-    },
-    downloads[] {
-        title,
-        "fileUrl": file.asset->url
-    },
-    relatedProducts[]-> {
-        _id,
-        title,
-        "slug": slug.current,
-        "imageUrl": catalogImage.asset->url,
         styledTitle {
-            mainTitle,
-            auxTitle
-        }
-    },
-  }`, { slug })
+          mainTitle,
+          auxTitle
+        },
+        serie,
+        description,
+        "mainImageUrl": catalogImage.asset->url,
+        mainFamily->{
+          name,
+          "slug": slug.current
+        },
+        subfamily->{
+          name,
+          "slug": slug.current
+        },
+        descriptionBlocks[] {
+            title,
+            text,
+            "iconUrl": icon.asset->url
+        },
+        "filters": filters[]->{
+          _id,
+          name,
+          "groupName": group->title,
+          "groupOrder": group->order
+        },
+        downloads[] {
+            title,
+            "fileUrl": file.asset->url
+        },
+        relatedProducts[]-> {
+            _id,
+            title,
+            "slug": slug.current,
+            "imageUrl": catalogImage.asset->url,
+            styledTitle {
+                mainTitle,
+                auxTitle
+            }
+        },
+    }`, { slug })
 
     if (!product) return notFound()
 
-    // 2. Agrupamos los filtros usando JavaScript
-    // Esto convierte un array plano en un objeto: { "Aplicaciones": ["Industria", "Data center"], "Tipo": ["Monofásicos"] }
     const groupedFilters = product.filters?.reduce((acc: any, filter: any) => {
         const group = filter.groupName || 'Otros'
         if (!acc[group]) acc[group] = []
@@ -57,39 +62,64 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     }, {})
 
     return (
-
-        /*
-        main className="grid grid-cols-12" style={{ gap: '40px', margin: '0 auto' }}
-        aside className="col-span-3" style={{ borderRight: '1px solid #eaeaea' }}
-        section className="col-span-9"
-
-        */
-
         <main>
-
+            {/* CABECERA AZUL CON MIGAS DE PAN */}
             <div className="font-sans p-8" style={{ backgroundColor: '#075FA3' }}>
                 <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 p-8">
-                    <nav className="md:col-span-12 text-white breadCrumbs">
-                        <ul className="flex flex-wrap gap-2">
-                            <li><Link href="/">Inicio</Link> /</li>
-                            <li><Link href="/productos">Productos</Link> /</li>
-<li>
-    {groupedFilters && Object.entries(groupedFilters).map(([groupName, options]: any, index) => (
-        <div key={groupName} className="mb-5">
-            <ul className="space-y-1">
-                {options.map((optionName: string, i: number) => (
-                    <li key={i} className="text-gray-600 flex items-center gap-2">
-                        {/* {groupName} */}
-                        {index} {optionName}
-                    </li>
-                ))}
-            </ul>
-        </div>
-    ))}
-</li>
-                            <li>{product.title}</li>
-                        </ul>
+
+                    {/* BREADCRUMBS */}
+                    <nav aria-label="Breadcrumb" className="md:col-span-12 text-blue-100 text-sm">
+                        <ol className="flex flex-wrap items-center gap-2">
+                            <li>
+                                <Link href="/" className="hover:text-white hover:underline transition-colors">
+                                    Inicio
+                                </Link>
+                            </li>
+                            <li className="text-blue-300">/</li>
+                            <li>
+                                <Link href="/" className="hover:text-white hover:underline transition-colors">
+                                    Productos
+                                </Link>
+                            </li>
+
+                            {/* FAMILIA PRINCIPAL */}
+                            {product.mainFamily && (
+                                <>
+                                    <li className="text-blue-300">/</li>
+                                    <li>
+                                        <Link
+                                            href={`/familias/${product.mainFamily.slug}`}
+                                            className="hover:text-white hover:underline transition-colors"
+                                        >
+                                            {product.mainFamily.name}
+                                        </Link>
+                                    </li>
+                                </>
+                            )}
+
+                            {/* SUBFAMILIA (SI EXISTE) */}
+                            {product.subfamily && (
+                                <>
+                                    <li className="text-blue-300">/</li>
+                                    <li>
+                                        <Link
+                                            href={`/familias/${product.subfamily.slug}`}
+                                            className="hover:text-white hover:underline transition-colors"
+                                        >
+                                            {product.subfamily.name}
+                                        </Link>
+                                    </li>
+                                </>
+                            )}
+
+                            {/* PRODUCTO ACTUAL */}
+                            <li className="text-blue-300">/</li>
+                            <li className="font-semibold text-white truncate max-w-xs md:max-w-none" aria-current="page">
+                                {product.title}
+                            </li>
+                        </ol>
                     </nav>
+
                     <div className="md:col-span-4">
                         {product.mainImageUrl && (
                             <img
@@ -99,7 +129,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                             />
                         )}
                     </div>
+
                     <span className="md:col-span-2"></span>
+
                     <div className="md:col-span-6">
                         {product.styledTitle?.mainTitle || product.styledTitle?.auxTitle ? (
                             <h1 className="text-4xl text-white font-bold mb-4">
@@ -112,16 +144,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                         <p className="text-lg text-white mb-6">{product.description}</p>
                         {product.serie && (
                             <span className="inline-block bg-gray-100 text-gray-700 text-xs font-semibold px-2.5 py-0.5 rounded mb-2">
-                            Serie: {product.serie}
-                        </span>
+                                Serie: {product.serie}
+                            </span>
                         )}
                     </div>
                 </div>
             </div>
 
-
-
-
+            {/* CUERPO Y ESPECIFICACIONES */}
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 p-8">
                 {/* COLUMNA IZQUIERDA: Info principal del producto */}
                 <div className="md:col-span-2">
@@ -182,10 +212,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 </aside>
             </div>
 
-            {/* BLOQUES DE DESCRIPCIÓN (Características destacadas) */}
+            {/* CARACTERÍSTICAS DESTACADAS */}
             {product.descriptionBlocks && product.descriptionBlocks.length > 0 && (
-                <section className="mt-8 border-t pt-6         max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-8 p-8">
-
+                <section className="mt-8 border-t pt-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-8 p-8">
                     <h3 className="text-2xl font-bold mb-4">Características destacadas</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {product.descriptionBlocks.map((block: any, index: number) => (
@@ -206,9 +235,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                     </div>
                 </section>
             )}
-            {/* SECCIÓN INFERIOR: PRODUCTOS RELACIONADOS */}
+
+            {/* PRODUCTOS RELACIONADOS */}
             {product.relatedProducts && product.relatedProducts.length > 0 && (
-                <section className="mt-8 border-t pt-6         max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-8 p-8">
+                <section className="mt-8 border-t pt-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-8 p-8">
                     <h3 className="text-2xl font-bold mb-6">Productos Relacionados</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                         {product.relatedProducts.map((rel: any) => (
@@ -235,9 +265,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                     </div>
                 </section>
             )}
-
-
-
         </main>
     )
 }

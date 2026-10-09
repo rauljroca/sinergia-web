@@ -9,27 +9,51 @@ export default async function FamilyPage({ params }: { params: Promise<{ slug: s
     const { slug } = resolvedParams
 
     const data = await client.fetch(`{
+        // 1. Familias principales (primer nivel)
         "allFamilies": *[_type == "family" && !defined(parent)] { 
             _id, 
             name, 
             "slug": slug.current 
         },
+
+        // 2. Familia activa (con referencia a su Padre si lo tiene)
         "currentFamily": *[_type == "family" && slug.current == $slug][0] { 
             _id, 
             name, 
-            description 
+            description,
+            parent->{
+                _id,
+                name,
+                "slug": slug.current
+            }
         },
-        "subfamilies": *[_type == "family" && parent._ref == *[_type == "family" && slug.current == $slug][0]._id] {
+
+        // 3. Subfamilias: Si es familia Principal trae sus hijas; si es Subfamilia trae sus hermanas
+        "subfamilies": *[_type == "family" && (
+            parent._ref == *[_type == "family" && slug.current == $slug][0]._id || 
+            (defined(*[_type == "family" && slug.current == $slug][0].parent._ref) && parent._ref == *[_type == "family" && slug.current == $slug][0].parent._ref)
+        )] {
             _id,
-            name
+            name,
+            "slug": slug.current
         },
-        // Adaptado al esquema: Filtros asociados a esta familia ordenados por su grupo
-        "familyFilters": *[_type == "productFilter" && *[_type == "family" && slug.current == $slug][0]._id in families[]._ref] | order(group->order asc) {
+
+        // 4. Filtros técnicos (asociados a esta familia o a su familia Padre)
+        "familyFilters": *[_type == "productFilter" && (
+            *[_type == "family" && slug.current == $slug][0]._id in families[]._ref ||
+            *[_type == "family" && slug.current == $slug][0].parent._ref in families[]._ref
+        )] | order(group->order asc) {
             _id,
             name,
             "groupTitle": coalesce(group->title, "Otros")
         },
-        "products": *[_type == "product" && (mainFamily._ref == *[_type == "family" && slug.current == $slug][0]._id || subfamily._ref in *[_type == "family" && parent._ref == *[_type == "family" && slug.current == $slug][0]._id]._id)]{
+
+        // 5. Productos: Coincide si es su mainFamily, su subfamily, o una de sus subfamilias hijas
+        "products": *[_type == "product" && (
+            mainFamily._ref == *[_type == "family" && slug.current == $slug][0]._id ||
+            subfamily._ref == *[_type == "family" && slug.current == $slug][0]._id ||
+            subfamily._ref in *[_type == "family" && parent._ref == *[_type == "family" && slug.current == $slug][0]._id]._id
+        )]{
             _id,
             title,
             "slug": slug.current,
