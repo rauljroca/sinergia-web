@@ -64,7 +64,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     return (
         <main>
             {/* CABECERA AZUL CON MIGAS DE PAN */}
-            <div className="font-sans p-8" style={{ backgroundColor: '#075FA3' }}>
+            <div className="font-sans p-8
+                bg-linear-to-t from-sky-500 to-blue-900">
+                {/* oklch(74.6% 0.16 232.661) */}
                 <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 p-8">
 
                     {/* BREADCRUMBS */}
@@ -81,7 +83,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                                     Productos
                                 </Link>
                             </li>
-
                             {/* FAMILIA PRINCIPAL */}
                             {product.mainFamily && (
                                 <>
@@ -96,7 +97,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                                     </li>
                                 </>
                             )}
-
                             {/* SUBFAMILIA (SI EXISTE) */}
                             {product.subfamily && (
                                 <>
@@ -111,7 +111,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                                     </li>
                                 </>
                             )}
-
                             {/* PRODUCTO ACTUAL */}
                             <li className="text-blue-300">/</li>
                             <li className="font-semibold text-white truncate max-w-xs md:max-w-none" aria-current="page">
@@ -134,12 +133,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
                     <div className="md:col-span-6">
                         {product.styledTitle?.mainTitle || product.styledTitle?.auxTitle ? (
-                            <h1 className="text-4xl text-white font-bold mb-4">
+                            <h1 className="text-4xl text-white font-heavy mb-4">
                                 {product.styledTitle.mainTitle && (<span>{product.styledTitle.mainTitle} </span>)}
                                 {product.styledTitle.auxTitle && (<span className="text-gray-200 font-normal">{product.styledTitle.auxTitle}</span>)}
                             </h1>
                         ) : (
-                            <h1 className="text-4xl text-white font-bold mb-4">{product.title}</h1>
+                            <h1 className="text-4xl text-white font-heavy mb-4">{product.title}</h1>
                         )}
                         <p className="text-lg text-white mb-6">{product.description}</p>
                         {product.serie && (

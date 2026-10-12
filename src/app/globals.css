@@ -5,11 +5,11 @@
   --foreground: #171717;
 }
 
+/* Configuramos Gilroy como la fuente principal de Tailwind v4 */
 @theme inline {
+  --font-sans: var(--font-gilroy), ui-sans-serif, system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 /*
@@ -24,5 +24,14 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans);
+}
+
+.font-heavy {
+  font-weight: var(--font-weight-heavy);
+}
+
+:root,
+:host {
+  --font-weight-heavy: 1000;
 }
