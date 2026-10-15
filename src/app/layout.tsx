@@ -74,7 +74,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${gilroy.variable} h-full antialiased`}
+      className={`${gilroy.variable} h-full antialiased scroll-smooth`}
     >
       <body className="min-h-full flex flex-col font-sans text-gray-900 bg-white">
       <Header />

@@ -68,25 +68,26 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 bg-linear-to-t from-sky-500 to-blue-900">
                 {/* oklch(74.6% 0.16 232.661) */}
                 <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 p-8">
-
                     {/* BREADCRUMBS */}
-                    <nav aria-label="Breadcrumb" className="md:col-span-12 text-blue-100 text-sm">
+                    <nav aria-label="Breadcrumb" className="md:col-span-12 text-blue-100 text-base">
                         <ol className="flex flex-wrap items-center gap-2">
+                            {/*
                             <li>
                                 <Link href="/" className="hover:text-white hover:underline transition-colors">
                                     Inicio
                                 </Link>
                             </li>
-                            <li className="text-blue-300">/</li>
+                            <li className="text-blue-300">&gt;</li>
+                            */}
                             <li>
-                                <Link href="/" className="hover:text-white hover:underline transition-colors">
+                                <Link href="/productos/" className="hover:text-white hover:underline transition-colors">
                                     Productos
                                 </Link>
                             </li>
                             {/* FAMILIA PRINCIPAL */}
                             {product.mainFamily && (
                                 <>
-                                    <li className="text-blue-300">/</li>
+                                    <li className="text-blue-300">&gt;</li>
                                     <li>
                                         <Link
                                             href={`/familias/${product.mainFamily.slug}`}
@@ -100,7 +101,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                             {/* SUBFAMILIA (SI EXISTE) */}
                             {product.subfamily && (
                                 <>
-                                    <li className="text-blue-300">/</li>
+                                    <li className="text-blue-300">&gt;</li>
                                     <li>
                                         <Link
                                             href={`/familias/${product.subfamily.slug}`}
@@ -112,14 +113,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                                 </>
                             )}
                             {/* PRODUCTO ACTUAL */}
-                            <li className="text-blue-300">/</li>
+                            <li className="text-blue-300">&gt;</li>
                             <li className="font-semibold text-white truncate max-w-xs md:max-w-none" aria-current="page">
                                 {product.title}
                             </li>
                         </ol>
                     </nav>
 
-                    <div className="md:col-span-4">
+                    <div className="md:col-span-5">
                         {product.mainImageUrl && (
                             <img
                                 src={product.mainImageUrl}
@@ -129,26 +130,126 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                         )}
                     </div>
 
-                    <span className="md:col-span-2"></span>
+                    <span className="md:col-span-1"></span>
 
                     <div className="md:col-span-6">
+                        <ol className="flex flex-wrap items-center gap-2
+                        mb-4
+                        font-semibold text-white text-3xl font-heavy
+                        ">
+                            {product.subfamily && (
+                                <>
+                                    <li>
+                                        <Link
+                                            href={`/familias/${product.subfamily.slug}`}
+                                            className="hover:text-white hover:underline transition-colors"
+                                        >
+                                            {product.subfamily.name}
+                                        </Link>
+                                    </li>
+                                </>
+                            )}
+                            {product.serie && (
+                                <>
+                                    <li className="font-base">/</li>
+                                    <li>
+                                        <span className="">
+                                            Serie: {product.serie}
+                                        </span>
+                                    </li>
+                                </>
+                            )}
+                        </ol>
+
                         {product.styledTitle?.mainTitle || product.styledTitle?.auxTitle ? (
-                            <h1 className="text-4xl text-white font-heavy mb-4">
+                            <h1 className="text-2xl font-light text-gray-200 mb-6">
                                 {product.styledTitle.mainTitle && (<span>{product.styledTitle.mainTitle} </span>)}
-                                {product.styledTitle.auxTitle && (<span className="text-gray-200 font-normal">{product.styledTitle.auxTitle}</span>)}
+                                {product.styledTitle.auxTitle && (<span className="text-7xl text-white">{product.styledTitle.auxTitle}</span>)}
                             </h1>
                         ) : (
-                            <h1 className="text-4xl text-white font-heavy mb-4">{product.title}</h1>
+                            <h1 className="text-7xl font-light text-white mb-6">{product.title}</h1>
                         )}
-                        <p className="text-lg text-white mb-6">{product.description}</p>
-                        {product.serie && (
-                            <span className="inline-block bg-gray-100 text-gray-700 text-xs font-semibold px-2.5 py-0.5 rounded mb-2">
-                                Serie: {product.serie}
-                            </span>
-                        )}
+
+                        <p className="text-lg leading-[2] text-white mb-6">{product.description}</p>
+
+                        <p className="flex gap-4 font-bold text-sm text-black">
+                            {product.serie && (
+                                <span className="
+                                      p-3 bg-blue-900 rounded-lg
+                                      border-blue-900
+                                      text-white"
+                                >
+                                    Serie: {product.serie}
+                                </span>
+                            )}
+                            {product.downloads && product.downloads.length > 0 && (
+                                <a
+                                    href="#docs"
+                                    rel="noopener noreferrer"
+                                    className="
+                                    p-3 bg-gray-50 rounded-lg
+                                    hover:bg-blue-900 hover:text-white transition-colors"
+                                >
+                                    Descargas
+                                </a>
+                            )}
+                            <a
+                                href="#contact"
+                                rel="noopener noreferrer"
+                                className="
+                                    p-3 bg-gray-50 rounded-lg
+                                    hover:bg-blue-900 hover:text-white transition-colors"
+                            >
+                                Pide presupuesto
+                            </a>
+                        </p>
                     </div>
                 </div>
             </div>
+
+
+            <nav className="p-8 b"
+                style={{
+                    width: '100%',
+                    height: '0',
+                    borderBottom: '0 solid transparent',
+                    borderLeft: '0 solid transparent',
+                    borderRight: '150px solid var(--color-gray-500)'}}>
+                <div className="max-w-6xl mx-auto
+                    text-blue-600
+                    p-4
+                    flex items-start gap-4"
+                >
+                    <p className="p-3 bg-blue-900
+                                      text-white">a</p>
+                    <p className="p-3 bg-blue-900
+                                      text-white">b</p>
+                </div>
+            </nav>
+
+            {/* CARACTERÍSTICAS DESTACADAS */}
+            {product.descriptionBlocks && product.descriptionBlocks.length > 0 && (
+                <section className="mt-8 border-t pt-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-8 p-8">
+                    <h3 className="text-2xl font-bold mb-4">Características destacadas</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {product.descriptionBlocks.map((block: any, index: number) => (
+                            <div key={index} className="p-4 border rounded-lg bg-gray-50 flex items-start gap-4">
+                                {block.iconUrl && (
+                                    <img
+                                        src={block.iconUrl}
+                                        alt={block.title || 'Icono'}
+                                        className="w-8 h-8 object-contain shrink-0 mt-1"
+                                    />
+                                )}
+                                <div>
+                                    {block.title && <h4 className="font-semibold text-gray-900">{block.title}</h4>}
+                                    {block.text && <p className="text-sm text-gray-600 mt-1">{block.text}</p>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
 
             {/* CUERPO Y ESPECIFICACIONES */}
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 p-8">
@@ -188,7 +289,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
                     {/* LISTADO DE DESCARGAS */}
                     {product.downloads && product.downloads.length > 0 && (
-                        <section className="mt-8 border-t pt-6">
+                        <section className="mt-8 border-t pt-6" id="docs" name="docs">
                             <h3 className="text-2xl font-bold mb-4">Documentación y Descargas</h3>
                             <ul className="space-y-3">
                                 {product.downloads.map((item: any, idx: number) => (
@@ -210,30 +311,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                     )}
                 </aside>
             </div>
-
-            {/* CARACTERÍSTICAS DESTACADAS */}
-            {product.descriptionBlocks && product.descriptionBlocks.length > 0 && (
-                <section className="mt-8 border-t pt-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-8 p-8">
-                    <h3 className="text-2xl font-bold mb-4">Características destacadas</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {product.descriptionBlocks.map((block: any, index: number) => (
-                            <div key={index} className="p-4 border rounded-lg bg-gray-50 flex items-start gap-4">
-                                {block.iconUrl && (
-                                    <img
-                                        src={block.iconUrl}
-                                        alt={block.title || 'Icono'}
-                                        className="w-8 h-8 object-contain shrink-0 mt-1"
-                                    />
-                                )}
-                                <div>
-                                    {block.title && <h4 className="font-semibold text-gray-900">{block.title}</h4>}
-                                    {block.text && <p className="text-sm text-gray-600 mt-1">{block.text}</p>}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            )}
 
             {/* PRODUCTOS RELACIONADOS */}
             {product.relatedProducts && product.relatedProducts.length > 0 && (
