@@ -289,7 +289,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
                     {/* LISTADO DE DESCARGAS */}
                     {product.downloads && product.downloads.length > 0 && (
-                        <section className="mt-8 border-t pt-6" id="docs" name="docs">
+                        <section className="mt-8 border-t pt-6" id="docs">
                             <h3 className="text-2xl font-bold mb-4">Documentación y Descargas</h3>
                             <ul className="space-y-3">
                                 {product.downloads.map((item: any, idx: number) => (
