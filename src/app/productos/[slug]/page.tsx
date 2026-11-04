@@ -207,43 +207,49 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 </div>
             </div>
 
+            {/* NAVEGACIÓN INTERNA DE PRODUCTO */}
+            <nav className="p-1 bg-blue-100">
+                <div className="
+                    max-w-6xl mx-auto
+                    font-bold text-lg
+                    p-8
+                    flex justify-items-center-safe
+                    grid-cols-1 md:grid-cols-1 gap-8
 
-            <nav className="p-8 b"
-                style={{
-                    width: '100%',
-                    height: '0',
-                    borderBottom: '0 solid transparent',
-                    borderLeft: '0 solid transparent',
-                    borderRight: '150px solid var(--color-gray-500)'}}>
-                <div className="max-w-6xl mx-auto
-                    text-blue-600
-                    p-4
-                    flex items-start gap-4"
+                    "
                 >
-                    <p className="p-3 bg-blue-900
-                                      text-white">a</p>
-                    <p className="p-3 bg-blue-900
-                                      text-white">b</p>
+                    {product.descriptionBlocks && product.descriptionBlocks.length > 0 && (
+                        <a href="#features" className="text-blue-900">Características</a>
+                    )}
+                    {product.relatedProducts && product.relatedProducts.length > 0 && (
+                        <a href="#related" className="text-blue-900">Similares</a>
+                    )}
+                    {product.downloads && product.downloads.length > 0 && (
+                        <a href="#docs" className="text-blue-900">Descargas</a>
+                    )}
+                    <a href="#contact" className="text-blue-900">Pedir información</a>
                 </div>
             </nav>
 
             {/* CARACTERÍSTICAS DESTACADAS */}
             {product.descriptionBlocks && product.descriptionBlocks.length > 0 && (
-                <section className="mt-8 border-t pt-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-8 p-8">
-                    <h3 className="text-2xl font-bold mb-4">Características destacadas</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <section className="mt-12 max-w-6xl
+                    mx-auto grid
+                    grid-cols-1 md:grid-cols-1 gap-8 p-8" id="features">
+                    <h3 className="text-2xl font-extrabold mb-4 uppercase">Características destacadas</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
                         {product.descriptionBlocks.map((block: any, index: number) => (
-                            <div key={index} className="p-4 border rounded-lg bg-gray-50 flex items-start gap-4">
+                            <div key={index} className={"mb-8"}>
                                 {block.iconUrl && (
                                     <img
                                         src={block.iconUrl}
                                         alt={block.title || 'Icono'}
-                                        className="w-8 h-8 object-contain shrink-0 mt-1"
+                                        className="w-24 h-24 mb-4 object-contain shrink-0 mt-1"
                                     />
                                 )}
                                 <div>
-                                    {block.title && <h4 className="font-semibold text-gray-900">{block.title}</h4>}
-                                    {block.text && <p className="text-sm text-gray-600 mt-1">{block.text}</p>}
+                                    {block.title && <h4 className="font-extrabold text-lg text-blue-900">{block.title}</h4>}
+                                    {block.text && <p className="text-lg text-gray-600 mt-1">{block.text}</p>}
                                 </div>
                             </div>
                         ))}
@@ -251,71 +257,69 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 </section>
             )}
 
-            {/* CUERPO Y ESPECIFICACIONES */}
-            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 p-8">
-                {/* COLUMNA IZQUIERDA: Info principal del producto */}
-                <div className="md:col-span-2">
+            <section className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-8 p-8" id="features">
+                <h3 className="text-2xl font-extrabold uppercase">Especificaciones</h3>
 
-                </div>
+                {/* 3. Pintamos los grupos ya ordenados */}
+                {groupedFilters && Object.entries(groupedFilters).map(([groupName, options]: any) => (
+                    <div key={groupName} className="mb-4">
+                        {/* Título del grupo (Ej: "Aplicaciones" o "Tipo") */}
+                        <h4 className="font-semibold text-gray-900 uppercase text-sm tracking-wider mb-4">
+                            {groupName}
+                        </h4>
 
-                {/* COLUMNA DERECHA: Los filtros / Especificaciones */}
-                <aside className="self-start">
-                    <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 self-start">
-                        <h3 className="text-xl font-bold mb-6 border-b pb-2">Especificaciones</h3>
+                        {/* Opciones dentro de ese grupo */}
+                        <div className="max-w-6xl mx-auto
+                            font-bold text-lg
+                            flex justify-items-center-safe gap-12">
+                            {options.map((optionName: string, i: number) => (
 
-                        {/* 3. Pintamos los grupos ya ordenados */}
-                        {groupedFilters && Object.entries(groupedFilters).map(([groupName, options]: any) => (
-                            <div key={groupName} className="mb-5">
-                                {/* Título del grupo (Ej: "Aplicaciones" o "Tipo") */}
-                                <h4 className="font-semibold text-gray-800 uppercase text-sm tracking-wider mb-2">
-                                    {groupName}
-                                </h4>
+                                <p key={i} className="flex gap-4 font-bold text-sm text-black
 
-                                {/* Opciones dentro de ese grupo */}
-                                <ul className="space-y-1">
-                                    {options.map((optionName: string, i: number) => (
-                                        <li key={i} className="text-gray-600 flex items-center gap-2">
-                                            <span className="text-blue-500">✓</span> {optionName}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
+                                      p-3 bg-blue-900 rounded-lg
+                                      border-blue-900
+                                      text-white"
+                                        >
+                                    {optionName}
+                                </p>
 
-                        {!groupedFilters && (
-                            <p className="text-sm text-gray-500">No hay especificaciones marcadas.</p>
-                        )}
+                            ))}
+                        </div>
                     </div>
+                ))}
 
-                    {/* LISTADO DE DESCARGAS */}
-                    {product.downloads && product.downloads.length > 0 && (
-                        <section className="mt-8 border-t pt-6" id="docs">
-                            <h3 className="text-2xl font-bold mb-4">Documentación y Descargas</h3>
-                            <ul className="space-y-3">
-                                {product.downloads.map((item: any, idx: number) => (
-                                    <li key={idx}>
-                                        {item.fileUrl && (
-                                            <a
-                                                href={item.fileUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-2 p-3 bg-gray-50 border rounded-lg text-blue-600 hover:bg-blue-50 transition-colors font-medium w-full"
-                                            >
-                                                📄 {item.title || 'Descargar documento'}
-                                            </a>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
-                        </section>
-                    )}
-                </aside>
-            </div>
+                {/* !groupedFilters && (
+                    <p className="text-sm text-gray-500">No hay especificaciones marcadas.</p>
+                ) */}
+            </section>
+
+            {/* LISTADO DE DESCARGAS */}
+            {product.downloads && product.downloads.length > 0 && (
+                <section className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-8 p-8" id="features">
+                    <h3 className="text-2xl font-extrabold uppercase">Documentación y Descargas</h3>
+                    <ul className="space-y-3">
+                        {product.downloads.map((item: any, idx: number) => (
+                            <li key={idx}>
+                                {item.fileUrl && (
+                                    <a
+                                        href={item.fileUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 p-3 bg-gray-50 border rounded-lg text-blue-600 hover:bg-blue-50 transition-colors font-medium w-full"
+                                    >
+                                        📄 {item.title || 'Descargar documento'}
+                                    </a>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                </section>
+            )}
 
             {/* PRODUCTOS RELACIONADOS */}
             {product.relatedProducts && product.relatedProducts.length > 0 && (
-                <section className="mt-8 border-t pt-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-8 p-8">
-                    <h3 className="text-2xl font-bold mb-6">Productos Relacionados</h3>
+                <section className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-8 p-8" id="docs">
+                    <h3 className="text-2xl font-extrabold uppercase">Productos Relacionados</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                         {product.relatedProducts.map((rel: any) => (
                             <div key={rel._id} className="border p-4 rounded-lg text-center hover:shadow-md transition-shadow bg-white">
